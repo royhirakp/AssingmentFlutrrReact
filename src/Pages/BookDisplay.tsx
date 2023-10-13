@@ -9,9 +9,16 @@ import {
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import CommentCard from "../Components/Crad/CommentCard";
+
+import {
+  useMakeCommentMutation,
+  useGetUnitPostQuery,
+} from "../Redux/api/LoginRegister";
 const BookDisplay = () => {
   const { id } = useParams();
   console.log(id);
+  const { data, error, isLoading } = useGetUnitPostQuery({ id: id });
+  console.log("comment and single book comming", data);
   return (
     <div>
       {/* book dispaly {id} */}
@@ -35,7 +42,7 @@ const BookDisplay = () => {
             }}
           >
             <BookDetails />
-            <CommnetForm />
+            <CommnetForm id={`${id}`} />
             <DisplayComment />
           </Box>
 
@@ -73,13 +80,15 @@ const DisplayComment = () => {
   );
 };
 
-const CommnetForm = () => {
+const CommnetForm = ({ id }: { id: string }) => {
   const [formData, setFormData] = React.useState({
     comment: "",
     ratting: "",
   });
   const [rattingError, setRattingError] = useState(false);
   const [commentError, setCommentError] = useState(false);
+  const [makeComment, { isError, isLoading, isSuccess }] =
+    useMakeCommentMutation();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -134,20 +143,22 @@ const CommnetForm = () => {
           >
             <Button
               onClick={() => {
-                // console.log(formData);
+                // handel comment error
+
                 if (formData.comment === "") {
                   setCommentError(true);
                 } else setCommentError(false);
                 let rattingDta: any = formData.ratting;
                 rattingDta = rattingDta * 1;
-                // console.log(rattingDta);
 
+                // handel ratting error
                 if (rattingDta) {
                   if (rattingDta < 6 && rattingDta > 0) {
-                    // console.log("write formatttttttttttt");
                     setRattingError(false);
                   } else setRattingError(true);
                 } else setRattingError(false);
+                makeComment({ id: id, data: formData });
+                console.log("secesssssss");
               }}
               variant="contained"
               sx={{ height: "40px" }}
@@ -217,6 +228,7 @@ const FooterC = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        background: "#80c8df",
       }}
     >
       <Typography>Footer</Typography>
@@ -236,7 +248,7 @@ const HeaderAndNavBar = () => {
         alignItems: "center",
         position: "sticky",
         top: 0,
-        background: "#dbdeee",
+        background: "#80c8df",
         zIndex: 99,
         flexDirection: "column",
       }}

@@ -5,6 +5,14 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { TextField, Stack } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import MuiBackDrop from "../MuiBackDrop";
+import {
+  useLoginMutation,
+  useSingupMutation,
+} from "../../Redux/api/LoginRegister";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -31,12 +39,31 @@ export default function SingUpModal({
     password: "",
     condirmPassword: "",
   });
+
+  // api
+  const [singup, { isLoading, isSuccess }] = useSingupMutation();
+  const [loginError, setRegisterError] = React.useState("");
+  const [loginSucess, SetRegistarSratus] = React.useState("");
+  // comnfirm password
+
+  const [confirmPassword, setConfirmPassword] = React.useState(true);
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
     }));
+
+    if (name === "condirmPassword") {
+      if (formData.password === value) {
+        console.log("password matcheddddd");
+        setConfirmPassword(true);
+      } else {
+        console.log("password not matched");
+        setConfirmPassword(false);
+      }
+    }
   };
 
   return (
@@ -46,11 +73,16 @@ export default function SingUpModal({
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
-        sx={{ border: "10px solid" }}
       >
         <Box sx={{ ...style, borderRadius: "5px" }}>
+          <MuiBackDrop open={isLoading} />
           <Stack direction="row" justifyContent="space-between">
-            <Typography id="modal-modal-title" variant="h6" component="h2">
+            <Typography
+              id="modal-modal-title"
+              variant="h6"
+              component="h2"
+              pb={3}
+            >
               Singup Modal
             </Typography>
             <Stack>
@@ -60,9 +92,8 @@ export default function SingUpModal({
             </Stack>
           </Stack>
           <Box>
-            <form action="" style={{ border: "1px solid" }}>
+            <form action="" style={{}}>
               <Box
-                border="1px solid"
                 justifyContent="center"
                 display="flex"
                 flexDirection="column"
@@ -86,12 +117,41 @@ export default function SingUpModal({
                   placeholder="Confirm Password"
                   value={formData.condirmPassword}
                   onChange={handleInputChange}
+                  error={!confirmPassword}
+                  helperText={!confirmPassword ? "Password not matched" : ""}
                 />
+              </Box>
+              <Box sx={{ margin: "2% 0", color: "red" }}>
+                <Typography textAlign="center" fontWeight={700}>
+                  {loginError}
+                </Typography>
+                <Typography textAlign="center" fontWeight={700}>
+                  {loginSucess}
+                </Typography>
               </Box>
               <Stack direction="row" justifyContent="center">
                 <Button
-                  onClick={() => {
-                    console.log(formData);
+                  onClick={async () => {
+                    try {
+                      let res = await singup(formData);
+                      console.log(res);
+
+                      let copy: any = res;
+                      if (!copy.error) {
+                        // localStorage.setItem("token", copy.data.token);
+                        SetRegistarSratus("Register sucessFull");
+                        setRegisterError("");
+
+                        // setTimeout(() => {
+                        //   handleClose();
+                        // }, 3000);
+                      } else {
+                        setRegisterError(copy.error.data.status);
+                        SetRegistarSratus("");
+                      }
+                    } catch (error) {
+                      console.log("error==", error);
+                    }
                   }}
                   variant="contained"
                 >

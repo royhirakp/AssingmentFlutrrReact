@@ -6,6 +6,9 @@ import Modal from "@mui/material/Modal";
 import { TextField, Stack } from "@mui/material";
 import SingUpModal from "./SingUpModal";
 import CloseIcon from "@mui/icons-material/Close";
+
+import { useLoginMutation } from "../../Redux/api/LoginRegister";
+import MuiBackDrop from "../MuiBackDrop";
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -14,14 +17,12 @@ const style = {
   width: 400,
   bgcolor: "background.paper",
   boxShadow: 24,
-
   p: 4,
 };
 
 export default function LoginModal({
   open,
   handleCloseLoginModal,
-  handleOpenLoginModal,
 }: {
   open: any;
   handleCloseLoginModal: any;
@@ -41,6 +42,11 @@ export default function LoginModal({
   const [singUpModalOpen, setOpen] = React.useState(false);
   const handleOpenSingModal = () => setOpen(true);
   const handleCloseSingUpModal = () => setOpen(false);
+  // login api
+  const [login, { isLoading, isError, isSuccess }] = useLoginMutation();
+  const [loginError, setLoginError] = React.useState("");
+  const [loginSucess, SetLoginSratus] = React.useState("");
+  const [timer, setTimer] = React.useState(0);
 
   return (
     <div>
@@ -49,11 +55,15 @@ export default function LoginModal({
         onClose={handleCloseLoginModal}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
-        sx={{ border: "10px solid" }}
       >
         <Box sx={{ ...style, borderRadius: "5px" }}>
           <Stack direction="row" justifyContent="space-between">
-            <Typography id="modal-modal-title" variant="h6" component="h2">
+            <Typography
+              id="modal-modal-title"
+              variant="h6"
+              pb={2}
+              component="h2"
+            >
               Login Modal
             </Typography>
             <Stack>
@@ -67,10 +77,10 @@ export default function LoginModal({
             open={singUpModalOpen}
             handleOpen={handleOpenSingModal}
           />
+          <MuiBackDrop open={isLoading} />
           <Box>
-            <form action="" style={{ border: "1px solid" }}>
+            <form action="">
               <Box
-                border="1px solid"
                 justifyContent="center"
                 display="flex"
                 flexDirection="column"
@@ -90,10 +100,36 @@ export default function LoginModal({
                   onChange={handleInputChange}
                 />
               </Box>
+              <Box sx={{ margin: "2% 0", color: "red" }}>
+                <Typography textAlign="center" fontWeight={700}>
+                  {loginError}
+                </Typography>
+                <Typography textAlign="center" fontWeight={700}>
+                  {loginSucess}
+                </Typography>
+              </Box>
+
               <Stack direction="row" justifyContent="center">
                 <Button
-                  onClick={() => {
-                    console.log(formData);
+                  onClick={async () => {
+                    try {
+                      let res = await login(formData);
+                      let copy: any = res;
+                      if (!copy.error) {
+                        localStorage.setItem("token", copy.data.token);
+                        SetLoginSratus("Login sucessFull");
+                        setLoginError("");
+
+                        setTimeout(() => {
+                          handleCloseLoginModal();
+                        }, 3000);
+                      } else {
+                        setLoginError(copy.error.data.status);
+                        SetLoginSratus("");
+                      }
+                    } catch (error) {
+                      console.log("error==", error);
+                    }
                   }}
                   variant="contained"
                 >

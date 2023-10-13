@@ -4,10 +4,12 @@ import BookCard from "../Components/Crad/BookCard";
 import MuiPagination from "../Components/MuiPagination";
 import FilterOptions from "../Components/FilterOptions";
 import { useNavigate } from "react-router-dom";
+import { useBooksQuery } from "../Redux/api/LoginRegister";
 const BookListPage = () => {
   //pagination
   const [page, setPage] = React.useState(1);
-
+  const { data, error, isLoading } = useBooksQuery({});
+  console.log("datatattatatatta====", data);
   // Define a function to handle page changes
   const handlePageChange = (event: any, value: any) => {
     setPage(value);
@@ -32,6 +34,7 @@ const BookListPage = () => {
     }
     setBooksData(result);
   }, [arr, page]);
+
   useEffect(() => {
     handelpagination();
   }, [page]);
@@ -85,7 +88,7 @@ const BookListPage = () => {
       <Box
         sx={{
           width: "100%",
-          bgcolor: "#fffff",
+          bgcolor: "#80c8df",
           border: "1px solid",
           height: "100px",
           alignContent: "end",
@@ -138,7 +141,7 @@ const HeaderAndNavBar = () => {
         alignItems: "center",
         position: "sticky",
         top: 0,
-        background: "#dbdeee",
+        background: "#80c8df",
         zIndex: 99,
         flexDirection: "column",
       }}
