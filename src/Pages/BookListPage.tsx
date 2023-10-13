@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Box, Button, Typography, Stack, Paper } from "@mui/material";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
+import { Box, Typography, Stack } from "@mui/material";
 import BookCard from "../Components/Crad/BookCard";
 import MuiPagination from "../Components/MuiPagination";
 import FilterOptions from "../Components/FilterOptions";
@@ -14,9 +14,12 @@ const BookListPage = () => {
     console.log("value", page);
   };
   let [booksData, setBooksData] = useState<string[]>([]);
-  let arr = ["1", "2,", "3", "4", "5", "6", "7", "8", "9", "10"];
-
-  function handelpagination() {
+  let dempoArr = ["1", "2,", "3", "4", "5", "6", "7", "8", "9", "10"];
+  const arr: any = useMemo(() => {
+    // Compute or transform data here
+    return dempoArr;
+  }, [dempoArr]);
+  const handelpagination = useCallback(() => {
     let result = [];
     let itemPerPage = 6;
     const startIndex = (page - 1) * itemPerPage;
@@ -28,7 +31,7 @@ const BookListPage = () => {
       result.push(paginatearr[i]);
     }
     setBooksData(result);
-  }
+  }, [arr, page]);
   useEffect(() => {
     handelpagination();
   }, [page]);
@@ -42,40 +45,7 @@ const BookListPage = () => {
         minHeight: "100vh",
       }}
     >
-      <Box
-        sx={{
-          width: "100%",
-          bgcolor: "#fffff",
-          border: "1px solid",
-          height: "100px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          position: "sticky",
-          top: 0,
-          background: "#dbdeee",
-          zIndex: 99,
-        }}
-      >
-        <Typography>Header</Typography>
-      </Box>
-      <Box
-        sx={{
-          width: "100%",
-          bgcolor: "#fffff",
-          border: "1px solid",
-          height: "40px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          position: "sticky",
-          top: 90,
-          background: "#dbdeee",
-          zIndex: 99,
-        }}
-      >
-        <Typography>navbar</Typography>
-      </Box>
+      <HeaderAndNavBar />
       <Box
         sx={{
           // height: "700px",
@@ -142,7 +112,7 @@ const ListOfBooks = ({ booksData }: { booksData: any }) => {
             <div
               key={i}
               onClick={() => {
-                let id = "123456";
+                // let id = "123456";
                 navigate("/book/id");
               }}
             >
@@ -152,5 +122,63 @@ const ListOfBooks = ({ booksData }: { booksData: any }) => {
         })}
       </Stack>
     </>
+  );
+};
+
+const HeaderAndNavBar = () => {
+  return (
+    <Box
+      sx={{
+        width: "100%",
+        bgcolor: "#fffff",
+        border: "1px solid",
+        height: "110px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        position: "sticky",
+        top: 0,
+        background: "#dbdeee",
+        zIndex: 99,
+        flexDirection: "column",
+      }}
+    >
+      {/* header and nav bar */}
+
+      <Box
+        sx={{
+          width: "100%",
+          bgcolor: "#fffff",
+          border: "1px solid",
+          height: "100px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          // position: "sticky",
+          top: 0,
+          // background: "#dbdeee",
+          // zIndex: 99,
+        }}
+      >
+        <Typography>Header</Typography>
+      </Box>
+      <Box
+        sx={{
+          width: "100%",
+          bgcolor: "#fffff",
+          border: "1px solid",
+          height: "40px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          position: "sticky",
+          top: 90,
+          background: "#6e6ca6",
+          zIndex: 99,
+        }}
+      >
+        <Typography>navbar</Typography>
+      </Box>
+    </Box>
   );
 };
