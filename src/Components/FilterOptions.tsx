@@ -1,7 +1,13 @@
 import * as React from "react";
 import { Box, Button, Typography, Stack, Paper } from "@mui/material";
 import AddBooksModal from "./Crad/AddBooksModal";
-const FilterOptions = () => {
+const FilterOptions = ({
+  setLoginOpen,
+  Loginopen,
+}: {
+  Loginopen: any;
+  setLoginOpen: any;
+}) => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -23,6 +29,8 @@ const FilterOptions = () => {
           handleOpen={handleOpen}
           open={open}
           handleClose={handleClose}
+          setLoginOpen={setLoginOpen}
+          Loginopen={Loginopen}
         />
         <Stack direction="column">
           <Button variant="contained" onClick={handleOpen}>

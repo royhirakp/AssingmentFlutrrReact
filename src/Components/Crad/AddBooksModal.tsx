@@ -6,6 +6,8 @@ import Modal from "@mui/material/Modal";
 import { TextField, Stack } from "@mui/material";
 import LoginModal from "./LoginModal";
 import CloseIcon from "@mui/icons-material/Close";
+import { useAddBooksMutation } from "../../Redux/api/LoginRegister";
+import MuiBackDrop from "../MuiBackDrop";
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -22,16 +24,22 @@ export default function AddBooksModal({
   open,
   handleClose,
   handleOpen,
+  Loginopen,
+  setLoginOpen,
 }: {
   open: any;
   handleClose: any;
   handleOpen: any;
+  Loginopen: any;
+  setLoginOpen: any;
 }) {
+  const [addBooks, { isLoading, isSuccess }] = useAddBooksMutation();
   const [formData, setFormData] = React.useState({
     title: "",
     author: "",
     imageUrl: "",
     description: "",
+    ratting: 0,
   });
 
   const [urlError, setUrlError] = React.useState(false);
@@ -39,9 +47,10 @@ export default function AddBooksModal({
   const [errorAutherStatus, setAuthererror] = React.useState(false);
 
   // logiin popup
-  const [Loginopen, setOpen] = React.useState(false);
-  const handleOpenLoginModal = () => setOpen(true);
-  const handleCloseLoginModal = () => setOpen(false);
+  // const [Loginopen, setOpen] = React.useState(false);
+  const handleOpenLoginModal = () => setLoginOpen(true);
+  const handleCloseLoginModal = () => setLoginOpen(false);
+  const [addbookErro, setAddbookError] = React.useState(true);
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
 
@@ -66,7 +75,7 @@ export default function AddBooksModal({
       if (formData.author === "") {
         setAuthererror(true);
       } else {
-        console.log("autheorrrrr if conditiponnnn", formData.author);
+        // console.log("autheorrrrr if conditiponnnn", formData.author);
 
         setAuthererror(false);
       }
@@ -87,7 +96,6 @@ export default function AddBooksModal({
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
-        sx={{ border: "10px solid" }}
       >
         <Box sx={{ ...style, borderRadius: "5px" }}>
           <LoginModal
@@ -108,9 +116,8 @@ export default function AddBooksModal({
           </Stack>
 
           <Box>
-            <form action="" style={{ border: "1px solid" }}>
+            <form action="">
               <Box
-                border="1px solid"
                 justifyContent="center"
                 display="flex"
                 flexDirection="column"
@@ -155,30 +162,64 @@ export default function AddBooksModal({
                   onChange={handleInputChange}
                 />
               </Box>
+              <Typography color="error">
+                {!addbookErro ? " Error !  login again" : ""}
+              </Typography>
+              <Typography color="error" textAlign="center">
+                {isSuccess ? "BOOK ADDED" : ""}
+              </Typography>
+              <Typography>
+                <span
+                  onClick={() => handleOpenLoginModal()}
+                  style={{ cursor: "pointer" }}
+                >
+                  <b>
+                    <u>
+                      <i>click to Login</i>
+                    </u>
+                  </b>
+                </span>
+              </Typography>
+
               <Stack direction="row" justifyContent="center">
                 <Button
-                  onClick={() => {
-                    console.log(formData);
+                  onClick={async () => {
+                    try {
+                      console.log(formData);
 
-                    if (formData.title == "") {
-                      setTitelerror(true);
-                    } else setTitelerror(false);
-                    if (formData.author == "") {
-                      setAuthererror(true);
-                    } else setAuthererror(false);
+                      if (formData.title == "") {
+                        setTitelerror(true);
+                      } else setTitelerror(false);
+                      if (formData.author == "") {
+                        setAuthererror(true);
+                      } else setAuthererror(false);
 
-                    alert(
-                      "you have to login first. ckick ok to go to the login modal"
-                    );
-
-                    if (1) {
-                      handleOpenLoginModal();
+                      if (!localStorage.getItem("token")) {
+                        alert(
+                          "you have to login first. ckick ok to go to the login modal"
+                        );
+                        handleOpenLoginModal();
+                      } else {
+                        let result: any = await addBooks(formData);
+                        let errorhansel = { ...result };
+                        console.log("add book workingggggg", formData, result);
+                        if (!result.data) {
+                          setAddbookError(false);
+                        } else {
+                          setAddbookError(true);
+                        }
+                      }
+                    } catch (error) {
+                      console.log("eerrror comming");
+                      console.log(error);
                     }
                   }}
                   variant="contained"
                 >
                   Submit
+                  {isLoading ? "loading.." : ""}
                 </Button>
+                <MuiBackDrop open={isLoading} />
               </Stack>
             </form>
           </Box>

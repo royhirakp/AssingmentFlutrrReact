@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const userLoginRegister = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3002/",
+    baseUrl: "https://flturr.onrender.com/",
     prepareHeaders(headers) {
       const token = localStorage.getItem("token");
       if (token) {
@@ -60,6 +60,16 @@ export const userLoginRegister = createApi({
           };
         },
       }),
+
+      addBooks: builder.mutation({
+        query(body) {
+          return {
+            url: "/bookAuth",
+            method: "POST",
+            body: body,
+          };
+        },
+      }),
     };
   },
 });
@@ -70,4 +80,5 @@ export const {
   useBooksQuery,
   useMakeCommentMutation,
   useGetUnitPostQuery,
+  useAddBooksMutation,
 } = userLoginRegister;

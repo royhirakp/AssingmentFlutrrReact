@@ -5,39 +5,35 @@ import MuiPagination from "../Components/MuiPagination";
 import FilterOptions from "../Components/FilterOptions";
 import { useNavigate } from "react-router-dom";
 import { useBooksQuery } from "../Redux/api/LoginRegister";
-const BookListPage = () => {
+
+const BookListPage = ({}: {}) => {
   //pagination
   const [page, setPage] = React.useState(1);
-  const { data, error, isLoading } = useBooksQuery({});
-  console.log("datatattatatatta====", data);
-  // Define a function to handle page changes
-  const handlePageChange = (event: any, value: any) => {
-    setPage(value);
-    console.log("value", page);
-  };
-  let [booksData, setBooksData] = useState<string[]>([]);
-  let dempoArr = ["1", "2,", "3", "4", "5", "6", "7", "8", "9", "10"];
-  const arr: any = useMemo(() => {
-    // Compute or transform data here
-    return dempoArr;
-  }, [dempoArr]);
-  const handelpagination = useCallback(() => {
-    let result = [];
-    let itemPerPage = 6;
-    const startIndex = (page - 1) * itemPerPage;
-    const endIndex = startIndex + itemPerPage;
-
-    let paginatearr = arr.slice(startIndex, endIndex);
-    console.log(typeof paginatearr);
-    for (let i in paginatearr) {
-      result.push(paginatearr[i]);
-    }
-    setBooksData(result);
-  }, [arr, page]);
+  const { data: reduxdata, error, isLoading } = useBooksQuery({});
+  const [booksData, setBooksData] = useState<any[]>([]);
+  // const [paginationArray, setPaginationArray] = useState<any[]>([]);
+  const [Loginopen, setLoginOpen] = useState(false);
 
   useEffect(() => {
-    handelpagination();
-  }, [page]);
+    fetch("https://flturr.onrender.com/book")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setBooksData(data?.books);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, []);
+
+  const handlePageChange = (event: any, value: any) => {
+    setPage(value);
+  };
+
   return (
     <Box
       sx={{
@@ -72,17 +68,18 @@ const BookListPage = () => {
               maxWidth: 250,
             }}
           >
-            <FilterOptions />
+            <FilterOptions Loginopen={Loginopen} setLoginOpen={setLoginOpen} />
           </Box>
           <Box flex={5}>
-            <ListOfBooks booksData={booksData} />
+            {" "}
+            <ListOfBooks booksData={booksData} pageNo={page} />
           </Box>
         </Stack>
       </Box>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <MuiPagination
           handlePageChange={handlePageChange}
-          totalNoofDta={arr.length}
+          totalNoofDta={booksData.length}
         />
       </Box>
       <Box
@@ -105,21 +102,43 @@ const BookListPage = () => {
 
 export default BookListPage;
 
-const ListOfBooks = ({ booksData }: { booksData: any }) => {
+const ListOfBooks = ({
+  booksData,
+  pageNo,
+}: {
+  booksData: any;
+  pageNo: any;
+}) => {
+  const [data, setData] = useState<any[]>([]);
+  const itemsPerPage = 6;
+
   const navigate = useNavigate();
+
+  console.log("booksData====", booksData, pageNo, data);
+
+  useEffect(() => {
+    const handelpagination = () => {
+      const startIndex = (pageNo - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const d = booksData.slice(startIndex, endIndex);
+      setData(d);
+    };
+    handelpagination();
+  }, [pageNo, booksData]);
+  // console.log("booksData==", booksData);
   return (
     <>
       <Stack direction="row" flexWrap="wrap" gap={2}>
-        {booksData.map((item: any, i: any) => {
+        {data?.map((item: any, i: any) => {
           return (
             <div
               key={i}
               onClick={() => {
                 // let id = "123456";
-                navigate("/book/id");
+                navigate(`/book/${item._id}`);
               }}
             >
-              <BookCard />
+              <BookCard item={item} />
             </div>
           );
         })}

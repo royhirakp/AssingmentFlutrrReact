@@ -7,21 +7,22 @@ import Button from "@mui/material/Button";
 import { Typography, Box, Divider } from "@mui/material/";
 import ProductRate from "./Ratting";
 
-export default function BookCard() {
+export default function BookCard({ item }: { item: any }) {
+  // console.log(item);
   return (
     <Card sx={{ maxWidth: 205, padding: "5px", cursor: "pointer" }}>
       <CardMedia
         sx={{ height: 340 }}
-        image="https://i.stack.imgur.com/BQGLu.jpg"
+        image={item.imageUrl}
         title="green iguana"
       />
       <CardContent sx={{ padding: "3%" }}>
-        <Typography variant="body1">Titele</Typography>
-        <Typography variant="body1">Author: Hirak Roy</Typography>
+        <Typography variant="body1">Titele: {item?.title}</Typography>
+        <Typography variant="body1">Author:{item?.author}</Typography>
       </CardContent>
       <Divider />
       <Box sx={{ width: "30%" }}>
-        <ProductRate count="5" rate={2} />
+        <ProductRate count="0" rate={item?.ratting} />
       </Box>
     </Card>
   );

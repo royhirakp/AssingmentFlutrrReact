@@ -1,7 +1,8 @@
 import { Box, Stack, Typography, Paper } from "@mui/material";
 import ProductRate from "./Ratting";
 
-const CommentCard = () => {
+const CommentCard = ({ item, count }: { item: any; count: any }) => {
+  console.log("cardddd======", item.ratting * 1);
   return (
     <div>
       <Paper sx={{ padding: "1%" }}>
@@ -26,13 +27,11 @@ const CommentCard = () => {
             sx={{ display: "flex", flexDirection: "column" }}
           >
             <Typography variant="body1" flex={5}>
-              <b> Comment: </b> Lorem ipsum dolor sit, amet consectetur
-              adipisicing elit. Delectus accusamus perferendis alias temporibus
-              unde architecto. Quibusdam
+              <b> Comment: </b> {item?.comment}
             </Typography>
             <Stack direction="row" justifyContent="space-between">
               <Box>
-                <ProductRate count="5" rate={5} />
+                <ProductRate count={count} rate={item?.ratting * 1} />
               </Box>
               <Typography pr={3}>
                 <b>user:</b> hirak

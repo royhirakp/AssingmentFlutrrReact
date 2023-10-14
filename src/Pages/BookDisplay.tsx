@@ -6,7 +6,7 @@ import {
   Button,
   Paper,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import CommentCard from "../Components/Crad/CommentCard";
 
@@ -14,11 +14,19 @@ import {
   useMakeCommentMutation,
   useGetUnitPostQuery,
 } from "../Redux/api/LoginRegister";
-const BookDisplay = () => {
+import LoginModal from "../Components/Crad/LoginModal";
+import MuiBackDrop from "../Components/MuiBackDrop";
+
+const BookDisplay = ({}: {}) => {
   const { id } = useParams();
-  console.log(id);
-  const { data, error, isLoading } = useGetUnitPostQuery({ id: id });
-  console.log("comment and single book comming", data);
+  // console.log(id);
+  const { data, error, isLoading, refetch } = useGetUnitPostQuery({ id: id });
+  const [state, setState] = useState({});
+  // console.log("comment and single book comming", data?.book[0]);
+  useEffect(() => {
+    setState(data?.book[0]);
+  }, [data]);
+  console.log(data?.book?.[0]);
   return (
     <div>
       {/* book dispaly {id} */}
@@ -41,9 +49,9 @@ const BookDisplay = () => {
               },
             }}
           >
-            <BookDetails />
-            <CommnetForm id={`${id}`} />
-            <DisplayComment />
+            <BookDetails id={id} data={state} />
+            <CommnetForm id={`${id}`} refetch={refetch} />
+            <DisplayComment state={state} />
           </Box>
 
           <FooterC />
@@ -55,43 +63,40 @@ const BookDisplay = () => {
 
 export default BookDisplay;
 
-const DisplayComment = () => {
+const DisplayComment = ({ state }: { state: any }) => {
+  // console.log("state====", state);
   return (
     <>
       <Box
         sx={{ display: "flex", flexDirection: "column", gap: 1, paddingTop: 5 }}
       >
         <Typography variant="h6">comments</Typography>
-        <CommentCard />
-
-        <CommentCard />
-
-        <CommentCard />
-        <CommentCard />
-        <CommentCard />
-        <CommentCard />
-        <CommentCard />
-        <CommentCard />
-        <CommentCard />
-        <CommentCard />
-        <CommentCard />
+        {/* <CommentCard item ={{}}/> */}
+        {state?.comments?.map((item: any, i: any) => {
+          return (
+            <CommentCard item={item} count={state?.comments?.length + ""} />
+          );
+        })}
       </Box>
     </>
   );
 };
 
-const CommnetForm = ({ id }: { id: string }) => {
+const CommnetForm = ({ id, refetch }: { id: string; refetch: any }) => {
   const [formData, setFormData] = React.useState({
     comment: "",
     ratting: "",
   });
   const [rattingError, setRattingError] = useState(false);
   const [commentError, setCommentError] = useState(false);
+  const [errorComment, setErrorCommnt] = React.useState(false);
+  const [Loginopen, setLoginOpen] = useState(false);
   const [makeComment, { isError, isLoading, isSuccess }] =
     useMakeCommentMutation();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
+
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
@@ -142,37 +147,76 @@ const CommnetForm = ({ id }: { id: string }) => {
             marginLeft="1%"
           >
             <Button
-              onClick={() => {
-                // handel comment error
+              onClick={async () => {
+                try {
+                  // handel comment error
 
-                if (formData.comment === "") {
-                  setCommentError(true);
-                } else setCommentError(false);
-                let rattingDta: any = formData.ratting;
-                rattingDta = rattingDta * 1;
+                  if (formData.comment === "") {
+                    setCommentError(true);
+                  } else setCommentError(false);
+                  let rattingDta: any = formData.ratting;
+                  rattingDta = rattingDta * 1;
 
-                // handel ratting error
-                if (rattingDta) {
-                  if (rattingDta < 6 && rattingDta > 0) {
-                    setRattingError(false);
-                  } else setRattingError(true);
-                } else setRattingError(false);
-                makeComment({ id: id, data: formData });
-                console.log("secesssssss");
+                  // handel ratting error
+                  if (rattingDta) {
+                    if (rattingDta < 6 && rattingDta > 0) {
+                      setRattingError(false);
+                    } else setRattingError(true);
+                  } else setRattingError(false);
+                  let result: any = await makeComment({
+                    id: id,
+                    data: formData,
+                  });
+                  console.log("secesssssss", result);
+
+                  if (result.data !== null) {
+                    setErrorCommnt(true);
+                  } else {
+                    setErrorCommnt(false);
+                  }
+                  refetch();
+                } catch (error) {}
               }}
               variant="contained"
               sx={{ height: "40px" }}
             >
               Post
             </Button>
+            <MuiBackDrop open={isLoading} />
           </Stack>
         </form>
+        <Typography color="error">
+          {errorComment ? "Login again or Token Missing" : ""}
+        </Typography>
+        <LoginModal
+          open={Loginopen}
+          handleCloseLoginModal={() => {
+            setLoginOpen(false);
+          }}
+          handleOpenLoginModal={() => {}}
+        />
+        <span
+          onClick={() => {
+            setLoginOpen(true);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          <b>
+            <u>
+              <i>click to Login</i>
+            </u>
+          </b>
+        </span>
+        <Typography textAlign="center" color="error">
+          {isSuccess ? "comment Posted" : ""}
+        </Typography>
       </Paper>
     </>
   );
 };
 
-const BookDetails = () => {
+const BookDetails = ({ id, data }: { id: any; data: any }) => {
+  console.log("datattatatatata==dfsf====", data);
   return (
     <Paper sx={{ padding: "2%" }}>
       <Stack direction="row" gap={2} sx={{}}>
@@ -183,11 +227,7 @@ const BookDetails = () => {
             maxWidth: "200px",
           }}
         >
-          <img
-            style={{ width: "100%" }}
-            src="https://i.stack.imgur.com/BQGLu.jpg"
-            alt="####"
-          />
+          <img style={{ width: "100%" }} src={data?.imageUrl} alt="####" />
         </Box>
         <Box
           flex={3}
@@ -195,20 +235,13 @@ const BookDetails = () => {
           sx={{ display: "flex", flexDirection: "column" }}
         >
           <Typography variant="subtitle1" flex={1}>
-            Title
+            <b>Title:</b> {data?.title}
           </Typography>
           <Typography variant="body2" flex={1}>
-            Auther
+            <b> Auther</b> {data?.author}
           </Typography>
           <Typography variant="body1" flex={5}>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Delectus
-            accusamus perferendis alias temporibus unde architecto. Quibusdam
-            culpa totam eos tenetur, aliquid perspiciatis, consectetur quisquam
-            impedit sed libero minus nisi. Accusamus! Lorem ipsum dolor sit,
-            amet consectetur adipisicing elit. Repellat maiores, optio
-            reprehenderit, quae tempora eligendi eveniet odio tempore a
-            perspiciatis placeat deserunt minima, ducimus inventore neque fugit
-            pariatur mollitia dolores.
+            <b>decribtion :</b> {data?.description}
           </Typography>
         </Box>
       </Stack>
