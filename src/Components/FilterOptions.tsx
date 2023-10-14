@@ -4,9 +4,11 @@ import AddBooksModal from "./Crad/AddBooksModal";
 const FilterOptions = ({
   setLoginOpen,
   Loginopen,
+  setRefresh,
 }: {
   Loginopen: any;
   setLoginOpen: any;
+  setRefresh: any;
 }) => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
@@ -31,6 +33,7 @@ const FilterOptions = ({
           handleClose={handleClose}
           setLoginOpen={setLoginOpen}
           Loginopen={Loginopen}
+          setRefresh={setRefresh}
         />
         <Stack direction="column">
           <Button variant="contained" onClick={handleOpen}>

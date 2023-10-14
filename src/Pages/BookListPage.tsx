@@ -9,7 +9,8 @@ import { useBooksQuery } from "../Redux/api/LoginRegister";
 const BookListPage = ({}: {}) => {
   //pagination
   const [page, setPage] = React.useState(1);
-  const { data: reduxdata, error, isLoading } = useBooksQuery({});
+  const { data: reduxdata, error, isLoading, refetch } = useBooksQuery({});
+  const [refestFetchDataAfterUplodeBook, setRefresh] = useState(false);
   const [booksData, setBooksData] = useState<any[]>([]);
   // const [paginationArray, setPaginationArray] = useState<any[]>([]);
   const [Loginopen, setLoginOpen] = useState(false);
@@ -28,7 +29,7 @@ const BookListPage = ({}: {}) => {
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, []);
+  }, [refestFetchDataAfterUplodeBook]);
 
   const handlePageChange = (event: any, value: any) => {
     setPage(value);
@@ -68,7 +69,11 @@ const BookListPage = ({}: {}) => {
               maxWidth: 250,
             }}
           >
-            <FilterOptions Loginopen={Loginopen} setLoginOpen={setLoginOpen} />
+            <FilterOptions
+              setRefresh={setRefresh}
+              Loginopen={Loginopen}
+              setLoginOpen={setLoginOpen}
+            />
           </Box>
           <Box flex={5}>
             {" "}

@@ -26,12 +26,14 @@ export default function AddBooksModal({
   handleOpen,
   Loginopen,
   setLoginOpen,
+  setRefresh,
 }: {
   open: any;
   handleClose: any;
   handleOpen: any;
   Loginopen: any;
   setLoginOpen: any;
+  setRefresh: any;
 }) {
   const [addBooks, { isLoading, isSuccess }] = useAddBooksMutation();
   const [formData, setFormData] = React.useState({
@@ -202,12 +204,13 @@ export default function AddBooksModal({
                       } else {
                         let result: any = await addBooks(formData);
                         let errorhansel = { ...result };
-                        console.log("add book workingggggg", formData, result);
+                        // console.log("add book workingggggg", formData, result);
                         if (!result.data) {
                           setAddbookError(false);
                         } else {
                           setAddbookError(true);
                         }
+                        setRefresh((prev: any) => !prev);
                       }
                     } catch (error) {
                       console.log("eerrror comming");
