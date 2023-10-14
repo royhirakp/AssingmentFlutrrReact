@@ -111,6 +111,7 @@ export default function SingUpModal({
                   placeholder="Password"
                   value={formData.password}
                   onChange={handleInputChange}
+                  type="password"
                 />
                 <TextField
                   name="condirmPassword"
@@ -119,6 +120,7 @@ export default function SingUpModal({
                   onChange={handleInputChange}
                   error={!confirmPassword}
                   helperText={!confirmPassword ? "Password not matched" : ""}
+                  type="password"
                 />
               </Box>
               <Box sx={{ margin: "2% 0", color: "red" }}>

@@ -85,7 +85,7 @@ export default function LoginModal({
                 display="flex"
                 flexDirection="column"
                 gap={2}
-                marginBottom="10PX"
+                marginBottom="10px"
               >
                 <TextField
                   name="email"
@@ -96,6 +96,7 @@ export default function LoginModal({
                 <TextField
                   name="password"
                   placeholder="Password"
+                  type="password"
                   value={formData.password}
                   onChange={handleInputChange}
                 />
