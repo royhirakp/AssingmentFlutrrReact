@@ -19,14 +19,11 @@ import MuiBackDrop from "../Components/MuiBackDrop";
 
 const BookDisplay = ({}: {}) => {
   const { id } = useParams();
-  // console.log(id);
   const { data, error, isLoading, refetch } = useGetUnitPostQuery({ id: id });
   const [state, setState] = useState({});
-  // console.log("comment and single book comming", data?.book[0]);
   useEffect(() => {
     setState(data?.book[0]);
   }, [data]);
-  console.log(data?.book?.[0]);
   return (
     <div>
       {/* book dispaly {id} */}
@@ -52,6 +49,7 @@ const BookDisplay = ({}: {}) => {
             <BookDetails id={id} data={state} />
             <CommnetForm id={`${id}`} refetch={refetch} />
             <DisplayComment state={state} />
+            <MuiBackDrop open={isLoading} />
           </Box>
 
           <FooterC />
@@ -64,7 +62,6 @@ const BookDisplay = ({}: {}) => {
 export default BookDisplay;
 
 const DisplayComment = ({ state }: { state: any }) => {
-  // console.log("state====", state);
   return (
     <>
       <Box
@@ -74,7 +71,11 @@ const DisplayComment = ({ state }: { state: any }) => {
         {/* <CommentCard item ={{}}/> */}
         {state?.comments?.map((item: any, i: any) => {
           return (
-            <CommentCard item={item} count={state?.comments?.length + ""} />
+            <CommentCard
+              item={item}
+              count={state?.comments?.length + ""}
+              key={i}
+            />
           );
         })}
       </Box>
@@ -167,7 +168,6 @@ const CommnetForm = ({ id, refetch }: { id: string; refetch: any }) => {
                     id: id,
                     data: formData,
                   });
-                  console.log("secesssssss", result);
 
                   if (result.data !== null) {
                     setErrorCommnt(true);
@@ -216,7 +216,6 @@ const CommnetForm = ({ id, refetch }: { id: string; refetch: any }) => {
 };
 
 const BookDetails = ({ id, data }: { id: any; data: any }) => {
-  console.log("datattatatatata==dfsf====", data);
   return (
     <Paper sx={{ padding: "2%" }}>
       <Stack direction="row" gap={2} sx={{}}>

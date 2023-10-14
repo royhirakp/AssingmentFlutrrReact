@@ -8,7 +8,24 @@ import { Typography, Box, Divider } from "@mui/material/";
 import ProductRate from "./Ratting";
 
 export default function BookCard({ item }: { item: any }) {
-  // console.log(item);
+  const [ratting, setRattion] = React.useState(0);
+
+  React.useEffect(() => {
+    let value = 0;
+    console.log("itemmmmmmm;;;;;;;", item);
+    for (let i in item?.comments) {
+      let rattingUnit = item?.comments[i].ratting;
+      console.log(rattingUnit);
+      if (rattingUnit) {
+        rattingUnit = rattingUnit * 1;
+      } else {
+        rattingUnit = 0;
+      }
+      value = value + rattingUnit;
+    }
+    if (value == 0) return;
+    setRattion(value / item?.comments?.length);
+  }, []);
   return (
     <Card sx={{ maxWidth: 205, padding: "5px", cursor: "pointer" }}>
       <CardMedia
@@ -22,7 +39,7 @@ export default function BookCard({ item }: { item: any }) {
       </CardContent>
       <Divider />
       <Box sx={{ width: "30%" }}>
-        <ProductRate count="0" rate={item?.ratting} />
+        <ProductRate count={item?.comments?.length} rate={ratting} />
       </Box>
     </Card>
   );

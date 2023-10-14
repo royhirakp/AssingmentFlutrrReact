@@ -3,7 +3,9 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const userLoginRegister = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://flturr.onrender.com/",
+    baseUrl:
+      // "http://localhost:3002",
+      "https://flturr.onrender.com/",
     prepareHeaders(headers) {
       const token = localStorage.getItem("token");
       if (token) {

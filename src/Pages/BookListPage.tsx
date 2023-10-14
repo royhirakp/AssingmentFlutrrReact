@@ -5,6 +5,7 @@ import MuiPagination from "../Components/MuiPagination";
 import FilterOptions from "../Components/FilterOptions";
 import { useNavigate } from "react-router-dom";
 import { useBooksQuery } from "../Redux/api/LoginRegister";
+import MuiBackDrop from "../Components/MuiBackDrop";
 
 const BookListPage = ({}: {}) => {
   //pagination
@@ -14,8 +15,11 @@ const BookListPage = ({}: {}) => {
   const [booksData, setBooksData] = useState<any[]>([]);
   // const [paginationArray, setPaginationArray] = useState<any[]>([]);
   const [Loginopen, setLoginOpen] = useState(false);
+  const [loder, setLoader] = useState(false);
 
   useEffect(() => {
+    setLoader(true);
+
     fetch("https://flturr.onrender.com/book")
       .then((response) => {
         if (!response.ok) {
@@ -24,10 +28,13 @@ const BookListPage = ({}: {}) => {
         return response.json();
       })
       .then((data) => {
-        setBooksData(data?.books);
+        setBooksData(data?.books?.reverse());
       })
       .catch((error) => {
         console.error("Error:", error);
+      })
+      .finally(() => {
+        setLoader(false);
       });
   }, [refestFetchDataAfterUplodeBook]);
 
@@ -58,6 +65,8 @@ const BookListPage = ({}: {}) => {
         <Typography variant="h5" p={1}>
           Book List
         </Typography>
+
+        <MuiBackDrop open={loder} />
 
         <Stack direction="row" gap={2}>
           <Box
@@ -119,8 +128,6 @@ const ListOfBooks = ({
 
   const navigate = useNavigate();
 
-  console.log("booksData====", booksData, pageNo, data);
-
   useEffect(() => {
     const handelpagination = () => {
       const startIndex = (pageNo - 1) * itemsPerPage;
@@ -130,7 +137,6 @@ const ListOfBooks = ({
     };
     handelpagination();
   }, [pageNo, booksData]);
-  // console.log("booksData==", booksData);
   return (
     <>
       <Stack direction="row" flexWrap="wrap" gap={2}>
