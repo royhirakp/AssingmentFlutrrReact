@@ -4,42 +4,32 @@ import BookCard from "../Components/Crad/BookCard";
 import MuiPagination from "../Components/MuiPagination";
 import FilterOptions from "../Components/FilterOptions";
 import { useNavigate } from "react-router-dom";
-// import { useBooksQuery } from "../Redux/api/LoginRegister";
+import { useBooksQuery } from "../Redux/api/LoginRegister";
 import MuiBackDrop from "../Components/MuiBackDrop";
-
+interface fetchData {
+  // books;
+}
 const BookListPage = () => {
   //pagination
   const [page, setPage] = React.useState(1);
-  // const { data: reduxdata, error, isLoading, refetch } = useBooksQuery({});
+  const {
+    data: reduxdata,
+    error,
+    isLoading,
+    refetch,
+    isError,
+  } = useBooksQuery({});
   const [refestFetchDataAfterUplodeBook, setRefresh] = useState(false);
   const [booksData, setBooksData] = useState<any[]>([]);
-  // const [paginationArray, setPaginationArray] = useState<any[]>([]);
   const [Loginopen, setLoginOpen] = useState(false);
   const [loder, setLoader] = useState(false);
   let getData = useCallback(() => {
-    setLoader(true);
-
-    fetch("https://flturr.onrender.com/book")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setBooksData(data?.books?.reverse());
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      })
-      .finally(() => {
-        setLoader(false);
-      });
-  }, []);
+    setBooksData(reduxdata?.books);
+  }, [reduxdata]);
 
   useEffect(() => {
     getData();
-  }, [refestFetchDataAfterUplodeBook, getData]);
+  }, [refestFetchDataAfterUplodeBook, getData, reduxdata]);
 
   const handlePageChange = (event: any, value: any) => {
     setPage(value);
@@ -69,7 +59,7 @@ const BookListPage = () => {
           Book List
         </Typography>
 
-        <MuiBackDrop open={loder} />
+        <MuiBackDrop open={isLoading} />
 
         <Stack direction="row" gap={2}>
           <Box
@@ -82,7 +72,7 @@ const BookListPage = () => {
             }}
           >
             <FilterOptions
-              setRefresh={setRefresh}
+              refetch={refetch}
               Loginopen={Loginopen}
               setLoginOpen={setLoginOpen}
             />
@@ -90,13 +80,19 @@ const BookListPage = () => {
           <Box flex={5}>
             {" "}
             <ListOfBooks booksData={booksData} pageNo={page} />
+            <Typography color="error" textAlign="center">
+              {error ? "error can't fetch the books" : ""}
+            </Typography>
+            <Typography color="error" textAlign="center">
+              {isError ? "some error to fetch the books" : ""}
+            </Typography>
           </Box>
         </Stack>
       </Box>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <MuiPagination
           handlePageChange={handlePageChange}
-          totalNoofDta={booksData.length}
+          totalNoofDta={booksData?.length}
         />
       </Box>
       <Box
@@ -128,18 +124,22 @@ const ListOfBooks = ({
 }) => {
   const [data, setData] = useState<any[]>([]);
   const itemsPerPage = 10;
-
   const navigate = useNavigate();
+  // pagination
+  const handelPagination = useCallback(() => {
+    let demoArray = [];
 
-  useEffect(() => {
-    const handelpagination = () => {
-      const startIndex = (pageNo - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      const d = booksData.slice(startIndex, endIndex);
-      setData(d);
-    };
-    handelpagination();
+    for (let i in booksData) {
+      demoArray.unshift(booksData[i]);
+    }
+    const startIndex = (pageNo - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const d = demoArray?.slice(startIndex, endIndex);
+    setData(d);
   }, [pageNo, booksData]);
+  useEffect(() => {
+    handelPagination();
+  }, [pageNo, booksData, handelPagination]);
   return (
     <>
       <Stack direction="row" flexWrap="wrap" gap={2}>
@@ -148,7 +148,6 @@ const ListOfBooks = ({
             <div
               key={i}
               onClick={() => {
-                // let id = "123456";
                 navigate(`/book/${item._id}`);
               }}
             >
