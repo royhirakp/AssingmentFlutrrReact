@@ -105,7 +105,7 @@ const CommnetForm = ({ id, refetch }: { id: string; refetch: any }) => {
   };
   return (
     <>
-      <Paper>
+      <Paper sx={{ padding: "10px 0 5px 0", marginTop: "8px" }}>
         <form
           action=""
           style={{
@@ -154,16 +154,26 @@ const CommnetForm = ({ id, refetch }: { id: string; refetch: any }) => {
 
                   if (formData.comment === "") {
                     setCommentError(true);
+                    return;
                   } else setCommentError(false);
                   let rattingDta: any = formData.ratting;
                   rattingDta = rattingDta * 1;
-
+                  console.log(rattingDta);
                   // handel ratting error
                   if (rattingDta) {
                     if (rattingDta < 6 && rattingDta > 0) {
                       setRattingError(false);
-                    } else setRattingError(true);
-                  } else setRattingError(false);
+                    } else {
+                      setRattingError(true);
+                      return;
+                    }
+                  } else {
+                    console.log(rattingDta, "ratting datatatatatta");
+
+                    setRattingError(true);
+                    return;
+                  }
+                  console.log("API CALLLLLL");
                   let result: any = await makeComment({
                     id: id,
                     data: formData,
@@ -186,7 +196,7 @@ const CommnetForm = ({ id, refetch }: { id: string; refetch: any }) => {
           </Stack>
         </form>
         <Typography color="error">
-          {errorComment ? "Login again or Token Missing" : ""}
+          {errorComment ? " please Login again or Token Missing" : ""}
         </Typography>
         <LoginModal
           open={Loginopen}

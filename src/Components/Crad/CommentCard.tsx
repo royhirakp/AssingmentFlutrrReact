@@ -2,7 +2,7 @@ import { Box, Stack, Typography, Paper } from "@mui/material";
 import ProductRate from "./Ratting";
 
 const CommentCard = ({ item, count }: { item: any; count: any }) => {
-  console.log("cardddd======", item.ratting * 1);
+  // console.log("cardddd======", item.ratting * 1);
   return (
     <div>
       <Paper sx={{ padding: "1%" }}>
