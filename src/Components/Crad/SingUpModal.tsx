@@ -6,12 +6,7 @@ import Modal from "@mui/material/Modal";
 import { TextField, Stack } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import MuiBackDrop from "../MuiBackDrop";
-import {
-  useLoginMutation,
-  useSingupMutation,
-} from "../../Redux/api/LoginRegister";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useSingupMutation } from "../../Redux/api/LoginRegister";
 
 const style = {
   position: "absolute" as "absolute",
@@ -28,8 +23,8 @@ const style = {
 export default function SingUpModal({
   open,
   handleClose,
-  handleOpen,
-}: {
+}: // handleOpen,
+{
   open: any;
   handleClose: any;
   handleOpen: any;
@@ -41,7 +36,7 @@ export default function SingUpModal({
   });
 
   // api
-  const [singup, { isLoading, isSuccess }] = useSingupMutation();
+  const [singup, { isLoading }] = useSingupMutation();
   const [loginError, setRegisterError] = React.useState("");
   const [loginSucess, SetRegistarSratus] = React.useState("");
   // comnfirm password

@@ -1,23 +1,22 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Box, Typography, Stack } from "@mui/material";
 import BookCard from "../Components/Crad/BookCard";
 import MuiPagination from "../Components/MuiPagination";
 import FilterOptions from "../Components/FilterOptions";
 import { useNavigate } from "react-router-dom";
-import { useBooksQuery } from "../Redux/api/LoginRegister";
+// import { useBooksQuery } from "../Redux/api/LoginRegister";
 import MuiBackDrop from "../Components/MuiBackDrop";
 
-const BookListPage = ({}: {}) => {
+const BookListPage = () => {
   //pagination
   const [page, setPage] = React.useState(1);
-  const { data: reduxdata, error, isLoading, refetch } = useBooksQuery({});
+  // const { data: reduxdata, error, isLoading, refetch } = useBooksQuery({});
   const [refestFetchDataAfterUplodeBook, setRefresh] = useState(false);
   const [booksData, setBooksData] = useState<any[]>([]);
   // const [paginationArray, setPaginationArray] = useState<any[]>([]);
   const [Loginopen, setLoginOpen] = useState(false);
   const [loder, setLoader] = useState(false);
-
-  useEffect(() => {
+  let getData = useCallback(() => {
     setLoader(true);
 
     fetch("https://flturr.onrender.com/book")
@@ -36,7 +35,11 @@ const BookListPage = ({}: {}) => {
       .finally(() => {
         setLoader(false);
       });
-  }, [refestFetchDataAfterUplodeBook]);
+  }, []);
+
+  useEffect(() => {
+    getData();
+  }, [refestFetchDataAfterUplodeBook, getData]);
 
   const handlePageChange = (event: any, value: any) => {
     setPage(value);
@@ -124,7 +127,7 @@ const ListOfBooks = ({
   pageNo: any;
 }) => {
   const [data, setData] = useState<any[]>([]);
-  const itemsPerPage = 6;
+  const itemsPerPage = 10;
 
   const navigate = useNavigate();
 
